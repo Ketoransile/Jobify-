@@ -7,20 +7,23 @@ import { toast } from "react-toastify";
 import customFetch from "../utils/customFetch";
 import { FormRowSelect } from "../components";
 
-export const action = async ({ request }) => {
-  const formData = await request.formData();
+export const action =
+  (queryClient) =>
+  async ({ request }) => {
+    const formData = await request.formData();
 
-  const data = Object.fromEntries(formData);
-  console.log(data);
-  try {
-    await customFetch.post("/jobs", data);
-    toast.success("Job created Successfully");
-    return redirect("/dashboard/all-jobs");
-  } catch (error) {
-    toast.error(error?.response?.data?.msg);
-    return error;
-  }
-};
+    const data = Object.fromEntries(formData);
+    console.log(data);
+    try {
+      await customFetch.post("/jobs", data);
+      queryClient.invalidateQueries(["jobs"]);
+      toast.success("Job created Successfully");
+      return redirect("/dashboard/all-jobs");
+    } catch (error) {
+      toast.error(error?.response?.data?.msg);
+      return error;
+    }
+  };
 const AddJob = () => {
   const { user } = useOutletContext();
 
