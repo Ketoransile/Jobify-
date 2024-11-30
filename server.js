@@ -10,6 +10,8 @@ import userRoute from "./routes/userRouter.js";
 import { authenticateUser } from "./middleware/authmiddleware.js";
 import cookieParser from "cookie-parser";
 import cloudinary from "cloudinary";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 
 // public
 import { dirname } from "path";
@@ -30,11 +32,11 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.use(express.static(path.resolve(__dirname, "./client/dist")));
-app.use(express.json());
 app.use(cookieParser());
-app.get("/api/v1/test", (req, res) => {
-  res.json({ msg: "test route" });
-});
+app.use(express.json());
+app.use(helmet());
+app.use(mongoSanitize());
+
 // routes middleware
 app.use("/api/v1/jobs", authenticateUser, jobsRoute);
 app.use("/api/v1/auth", authRoute);
